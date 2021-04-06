@@ -1,0 +1,145 @@
+
+.texto {
+    color: darkgreen;
+    font-size: 14pt;
+}
+
+.upload-area {
+    width: 70%;
+    border: 2px solid lightgray;
+    border-radius: 3px;
+    margin: 0 auto;
+    margin-top: 100px;
+    text-align: center;
+    overflow: auto;
+    background: #E4FFEA;
+}
+
+.upload-area:hover {
+    cursor: pointer;
+}
+
+#file {
+    display: none;
+}
+
+/* Thumbnail */
+.thumbnail {
+    width: 80px;
+    height: 80px;
+    padding: 2px;
+    border: 2px solid lightgray;
+    border-radius: 3px;
+    float: left;
+}
+
+.size {
+    font-size: 12px;
+}
+
+.subir {
+    margin-top: -100px;
+}
+
+.wrapper-progressBar {
+    width: 100%
+}
+
+.progressBar {
+}
+
+.progressBar li {
+    list-style-type: none;
+    float: left;
+    width: 33%;
+    position: relative;
+    text-align: center;
+}
+
+.progressBar li:before {
+    content: " ";
+    line-height: 30px;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #a8e6cf;
+    display: block;
+    text-align: center;
+    margin: 0 auto 10px;
+    background-color: white
+}
+
+.progressBar li:after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    background-color: white;
+    border: 1px solid #a8e6cf;
+    top: 15px;
+    left: -50%;
+    z-index: -1;
+}
+
+.progressBar li:first-child:after {
+    content: none;
+}
+
+.progressBar li.active {
+    color: green;
+}
+
+.progressBar li.active:before {
+    border-color: #a8e6cf;
+    background-color: #a8e6cf
+}
+
+.progressBar .active:after {
+    background-color: #a8e6cf;
+}
+
+.principal{
+    background: #EFEFEF;
+    padding: 10px;
+    padding-top: 70px;
+}
+
+#previewer{
+    position: relative;
+    top: 10px;
+    border: 1px solid black;
+    height: calc(100vh - 250px); 
+    width: 100%;
+    display: none;
+    overflow: auto;
+}
+
+#firmar{
+    display: none;
+    position: relative;
+    top: 20px;
+}
+#firmar:hover{
+    cursor: pointer;
+}
+.telon{
+    position: fixed;
+    display: none;
+    height: 100vh;
+    width: 100vw;
+    z-index: 1000;
+    background:rgba(0,0,0,.8);
+}
+#gear-telon{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    color: white;
+    font-size: 20pt;
+    transform: translate(-50%, -50%);
+}
+.container{
+    padding: 0px !important;
+    width: 100% !important;
+}
