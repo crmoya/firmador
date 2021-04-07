@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\validators\RutValidator;
 use Yii;
 use yii\base\Model;
 
@@ -15,7 +16,6 @@ class LoginForm extends Model
 {
     public $username;
     public $password;
-    public $rememberMe = true;
 
     private $_user = false;
 
@@ -26,12 +26,9 @@ class LoginForm extends Model
     public function rules()
     {
         return [
-            // username and password are both required
             [['username', 'password'], 'required'],
-            // rememberMe must be a boolean value
-            ['rememberMe', 'boolean'],
-            // password is validated by validatePassword()
             ['password', 'validatePassword'],
+            [['username'], RutValidator::class],
         ];
     }
 
@@ -48,7 +45,7 @@ class LoginForm extends Model
             $user = $this->getUser();
 
             if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Incorrect username or password.');
+                $this->addError($attribute, 'RUT / Clave incorrectos.');
             }
         }
     }
@@ -60,10 +57,23 @@ class LoginForm extends Model
     public function login()
     {
         if ($this->validate()) {
-            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600*24*30 : 0);
+            return Yii::$app->user->login($this->getUser());
         }
         return false;
     }
+
+    
+    /**
+     * @return array customized attribute labels
+     */
+    public function attributeLabels()
+    {
+        return [
+            'username' => 'RUT',
+            'password' => 'Clave',
+        ];
+    }
+
 
     /**
      * Finds user by [[username]]
