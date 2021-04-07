@@ -68,7 +68,6 @@ class DocumentoController extends \yii\rest\Controller
         
     }
     
-    
     public function actionDownload() {
         $request = Yii::$app->request;
         $id = $request->get('id');
@@ -83,7 +82,7 @@ class DocumentoController extends \yii\rest\Controller
     }
 
     public function actionUpload(){
-        
+
     }
 
 }
