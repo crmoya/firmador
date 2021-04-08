@@ -53,9 +53,6 @@ class DocumentoController extends \yii\rest\Controller
                 ->withClaim('uid', $user->id)// Configures a new claim, called "uid"
                 ->getToken($signer, $key); // Retrieves the generated token
 
-            $user->access_token = (string)$token;
-            $user->save();
-
             return $this->asJson([
                 'status' => 'SUCCESS',
                 'token' => (string)$token,

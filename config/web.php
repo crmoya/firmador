@@ -57,6 +57,7 @@ $config = [
         'jwt' => [
             'class' => \sizeg\jwt\Jwt::class,
             'key'   => 'c2?2h3#u&JqKQ@t#RFC-#w#78^p6qEYGx-zc&Jyhf@w3VAzSUcJ+U?B72rE!ZEv&',
+            'jwtValidationData' => \app\components\JwtValidationData::class,
         ],
     ],
     'params' => $params,
