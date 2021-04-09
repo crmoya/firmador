@@ -37,9 +37,22 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      * @param \Lcobucci\JWT\Token $token
+     * @return static|null
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
+        return static::findOne(['id' => $token->getClaim('uid')]);
+    }
+
+    /**
+     * Finds user by string token
+     *
+     * @param string $token
+     * @return static|null
+     */
+    public static function findIdentityByStringToken($stringtoken)
+    {
+        $token = Yii::$app->jwt->getParser()->parse((string) $stringtoken); // Parses from a string
         return static::findOne(['id' => $token->getClaim('uid')]);
     }
 

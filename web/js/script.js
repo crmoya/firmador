@@ -64,11 +64,9 @@ function renderPDF(dataURI){
 }
 
 function callWS(idDocumento){
-  const Http = new XMLHttpRequest();
   const url='http://127.0.0.1:8080/firmador';
   try {
-    var token = "unperritotokeinzado";
-    var data = { idDocumento: idDocumento, token: token };
+    var data = { idDocumento: idDocumento };
     $.post(url,JSON.stringify(data), function(respuesta) {
       if(respuesta == "OK"){
         Swal.fire({
