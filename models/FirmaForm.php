@@ -21,13 +21,21 @@ class FirmaForm extends Model
     
     public function upload()
     {
-        $path = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents';
+        $path = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents'. DIRECTORY_SEPARATOR . "not_signed";
         if ($this->validate()) {
-            $count = DocIndexer::getNext();
-            $this->file->saveAs($path . DIRECTORY_SEPARATOR . "not_signed" . DIRECTORY_SEPARATOR . $count . ".pdf");
-            return $count;
-        } else {
-            return -1;
+            $user_id = Yii::$app->user->id;
+            $user_path = $path . DIRECTORY_SEPARATOR . $user_id;
+            if(!is_dir($user_path)){
+                mkdir($user_path);
+            }
+            $document = new Document();
+            $document->user_id = $user_id;
+            if($document->save()){
+                if($this->file->saveAs($user_path . DIRECTORY_SEPARATOR . $document->id . ".pdf")){
+                    return $document->id;
+                }
+            }            
         }
+        return -1;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Document;
 use app\models\User;
 use sizeg\jwt\JwtHttpBearerAuth;
 use Yii;
@@ -108,13 +109,16 @@ class DocumentoController extends \yii\rest\Controller
     public function actionDownload() {
         $request = Yii::$app->request;
         $id = $request->get('id');
-        $userid = Yii::$app->user->id;
 
-        
-        $fullname = realpath(Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents' . DIRECTORY_SEPARATOR . 'not_signed' . DIRECTORY_SEPARATOR . $id . '.pdf');
+        $document = Document::findOne($id);
+        if($document->user_id != Yii::$app->user->id){
+            throw new \yii\web\NotFoundHttpException();
+        }
+        $path = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents' . DIRECTORY_SEPARATOR . 'not_signed' . DIRECTORY_SEPARATOR . Yii::$app->user->id . DIRECTORY_SEPARATOR . $id . '.pdf';
+        $fullname = realpath($path);
         if(file_exists($fullname)){
             $file = Yii::$app->response->sendFile($fullname);  
-            unlink(Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents' . DIRECTORY_SEPARATOR . 'not_signed' . DIRECTORY_SEPARATOR . $id . '.pdf');  
+            unlink($path);  
             return $file;
         }
         throw new \yii\web\NotFoundHttpException();
@@ -128,14 +132,15 @@ class DocumentoController extends \yii\rest\Controller
         $request = Yii::$app->request;
         $id = $request->get('id');
         $allowed = array("pdf" => "application/octet-stream");
-        $filename = $_FILES["file"]["name"];
         $filetype = $_FILES["file"]["type"];
-        $filesize = $_FILES["file"]["size"];
-        $path = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents' . DIRECTORY_SEPARATOR . 'signed' . DIRECTORY_SEPARATOR . $id . '.pdf';
-        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+
+        $userpath = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents' . DIRECTORY_SEPARATOR . 'signed' . DIRECTORY_SEPARATOR . Yii::$app->user->id;
+        if(!is_dir($userpath)){
+            mkdir($userpath);
+        }    
+        $path = $userpath . DIRECTORY_SEPARATOR . $id . '.pdf';
         if (in_array($filetype, $allowed)) {
             if(move_uploaded_file($_FILES["file"]["tmp_name"], $path)){
-                unlink(Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents' . DIRECTORY_SEPARATOR . 'not_signed' . DIRECTORY_SEPARATOR . $id . '.pdf');
                 $json = [
                     'Status' => 'SUCCESS',
                     'Message' => 'Documento subido con éxito',
