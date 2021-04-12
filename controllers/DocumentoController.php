@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Authorized;
 use app\models\Document;
 use app\models\User;
 use sizeg\jwt\JwtHttpBearerAuth;
@@ -109,19 +110,39 @@ class DocumentoController extends \yii\rest\Controller
     public function actionDownload() {
         $request = Yii::$app->request;
         $id = $request->get('id');
-
+        $device = $request->get('device');
+        $userid = Yii::$app->user->id;
+        if($userid <= 0){
+            throw new \yii\web\ForbiddenHttpException();
+        }
+        $hash = sha1($device.".".$userid);
         $document = Document::findOne($id);
-        if($document->user_id != Yii::$app->user->id){
+        if(!isset($document)){
             throw new \yii\web\NotFoundHttpException();
         }
-        $path = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents' . DIRECTORY_SEPARATOR . 'not_signed' . DIRECTORY_SEPARATOR . Yii::$app->user->id . DIRECTORY_SEPARATOR . $id . '.pdf';
+        if($document->user_id != $userid){
+            throw new \yii\web\ForbiddenHttpException();
+        }
+        $authorized = Authorized::find(['user_id'=>$userid, 'device'=>$hash])->one();
+        if(!isset($authorized)){
+            throw new \yii\web\ForbiddenHttpException();
+        }
+        $pathdocuments = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents';
+        if(!is_dir($pathdocuments)){
+            mkdir($pathdocuments);
+        } 
+        $pathunsigned = $pathdocuments. DIRECTORY_SEPARATOR . "unsigned";
+        if(!is_dir($pathunsigned)){
+            mkdir($pathunsigned);
+        } 
+        $path = $pathunsigned . DIRECTORY_SEPARATOR . $userid . DIRECTORY_SEPARATOR . $id . '.pdf';
         $fullname = realpath($path);
         if(file_exists($fullname)){
             $file = Yii::$app->response->sendFile($fullname);  
             unlink($path);  
             return $file;
         }
-        throw new \yii\web\NotFoundHttpException();
+        throw new \yii\web\ForbiddenHttpException();
     }
 
     public function actionUpload(){
@@ -131,13 +152,39 @@ class DocumentoController extends \yii\rest\Controller
         ];
         $request = Yii::$app->request;
         $id = $request->get('id');
+        $device = $request->get('device');
+        $userid = Yii::$app->user->id;
+        if($userid <= 0){
+            throw new \yii\web\ForbiddenHttpException();
+        }
+        $hash = sha1($device.".".$userid);
+        $document = Document::findOne($id);
+        if(!isset($document)){
+            throw new \yii\web\NotFoundHttpException();
+        }
+        if($document->user_id != $userid){
+            throw new \yii\web\ForbiddenHttpException();
+        }
+        $authorized = Authorized::find(['user_id'=>$userid, 'device'=>$hash])->one();
+        if(!isset($authorized)){
+            throw new \yii\web\ForbiddenHttpException();
+        }
         $allowed = array("pdf" => "application/octet-stream");
         $filetype = $_FILES["file"]["type"];
-
-        $userpath = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents' . DIRECTORY_SEPARATOR . 'signed' . DIRECTORY_SEPARATOR . Yii::$app->user->id;
+        
+        $pathdocuments = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents';
+        if(!is_dir($pathdocuments)){
+            mkdir($pathdocuments);
+        } 
+        $pathsigned = $pathdocuments. DIRECTORY_SEPARATOR . "signed";
+        if(!is_dir($pathsigned)){
+            mkdir($pathsigned);
+        } 
+        $userpath = $pathsigned . DIRECTORY_SEPARATOR . $userid;
         if(!is_dir($userpath)){
             mkdir($userpath);
         }    
+        
         $path = $userpath . DIRECTORY_SEPARATOR . $id . '.pdf';
         if (in_array($filetype, $allowed)) {
             if(move_uploaded_file($_FILES["file"]["tmp_name"], $path)){

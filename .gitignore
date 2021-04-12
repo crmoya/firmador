@@ -33,5 +33,5 @@ tests/_support/_generated
 /.vagrant
 
 /documents
-/documents/not_signed
+/documents/unsigned
 /documents/signed
