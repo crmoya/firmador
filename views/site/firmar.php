@@ -40,9 +40,9 @@ $script = <<< JS
 JS;
 $this->registerJs($script);
 
-
 if(isset($result)){
     $script = <<< JS
+
 
     $(document).ready(function(e){
         if($result > -1){

@@ -67,8 +67,9 @@ function callWS(idDocumento){
   const url='http://127.0.0.1:8080/firmador';
   try {
     var data = { idDocumento: idDocumento };
-    $.post(url,JSON.stringify(data), function(respuesta) {
-      if(respuesta == "OK"){
+    $.post(url,JSON.stringify(data), function(msg) {
+      var respuesta = JSON.parse(msg);
+      if(respuesta.Status){
         Swal.fire({
           icon: "success",
           title: "Documento firmado con éxito",
@@ -79,7 +80,7 @@ function callWS(idDocumento){
         Swal.fire({
           icon: "error",
           title: "ERROR",
-          text: respuesta,
+          text: respuesta.Message,
         });
       }
     }).fail(function() {
