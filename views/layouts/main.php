@@ -36,21 +36,12 @@ AppAsset::register($this);
         ],
     ]);
     echo Nav::widget([
-        'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-            Yii::$app->user->isGuest ? (
-                ['label' => 'Iniciar sesión', 'url' => ['/site/login']]
-            ) : (
-                '<li>'
-                . Html::beginForm(['/site/logout'], 'post')
-                . Html::submitButton(
-                    'Cerrar sesión (' . Yii::$app->user->identity->username . ')',
-                    ['class' => 'btn btn-link logout']
-                )
-                . Html::endForm()
-                . '</li>'
-            )
+            ['label' => 'Firmar', 'url' => ['/site/index'],'visible'=>!Yii::$app->user->isGuest],
+            ['label' => 'Mis documentos firmados', 'url' => ['/site/uploaded'],'visible'=>!Yii::$app->user->isGuest],
+            ['label' => 'Salir', 'url' => ['/site/logout'],'visible'=>!Yii::$app->user->isGuest],
         ],
+        'options' => ['class' => 'navbar-nav navbar-right'],
     ]);
     NavBar::end();
     ?>

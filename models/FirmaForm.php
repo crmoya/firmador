@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\base\Model;
+use yii\helpers\HtmlPurifier;
 
 /**
  * ContactForm is the model behind the contact form.
@@ -37,6 +38,7 @@ class FirmaForm extends Model
         if ($this->validate()) {
             $document = new Document();
             $document->user_id = $userid;
+            $document->name = HtmlPurifier::process($this->file->name);
             if($document->save()){
                 if($this->file->saveAs($userpath . DIRECTORY_SEPARATOR . $document->id . ".pdf")){
                     return $document->id;

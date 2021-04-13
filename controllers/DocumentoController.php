@@ -51,7 +51,7 @@ class DocumentoController extends \yii\rest\Controller
                 ->permittedFor(Yii::$app->params['server'])// Configures the audience (aud claim)
                 ->identifiedBy(Yii::$app->params['jwtId'], true)// Configures the id (jti claim), replicating as a header item
                 ->issuedAt($time)// Configures the time that the token was issue (iat claim)
-                ->expiresAt($time + 60)// Configures the expiration time of the token (exp claim)
+                ->expiresAt($time + 600)// Configures the expiration time of the token (exp claim)
                 ->withClaim('uid', $user->id)// Configures a new claim, called "uid"
                 ->getToken($signer, $key); // Retrieves the generated token
 
@@ -87,7 +87,7 @@ class DocumentoController extends \yii\rest\Controller
                 ->permittedFor(Yii::$app->params['server'])
                 ->identifiedBy(Yii::$app->params['jwtId'], true)
                 ->issuedAt($time)
-                ->expiresAt($time + 60)
+                ->expiresAt($time + 600)
                 ->withClaim('uid', $user->id)
                 ->getToken($signer, $key); 
 
@@ -111,21 +111,24 @@ class DocumentoController extends \yii\rest\Controller
         $request = Yii::$app->request;
         $id = $request->get('id');
         $device = $request->get('device');
+        if(strlen($device)<=0){
+            throw new \yii\web\ForbiddenHttpException("Unauthorized device");
+        }
         $userid = Yii::$app->user->id;
         if($userid <= 0){
-            throw new \yii\web\ForbiddenHttpException();
+            throw new \yii\web\ForbiddenHttpException("User not found");
         }
         $hash = sha1($device.".".$userid);
         $document = Document::findOne($id);
         if(!isset($document)){
-            throw new \yii\web\NotFoundHttpException();
+            throw new \yii\web\NotFoundHttpException("Document not found");
         }
         if($document->user_id != $userid){
-            throw new \yii\web\ForbiddenHttpException();
+            throw new \yii\web\ForbiddenHttpException("User is not document's owner");
         }
-        $authorized = Authorized::find(['user_id'=>$userid, 'device'=>$hash])->one();
+        $authorized = Authorized::find()->where(['user_id'=>$userid, 'device'=>$hash])->one();
         if(!isset($authorized)){
-            throw new \yii\web\ForbiddenHttpException();
+            throw new \yii\web\ForbiddenHttpException("Unauthorized device");
         }
         $pathdocuments = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents';
         if(!is_dir($pathdocuments)){
@@ -142,7 +145,7 @@ class DocumentoController extends \yii\rest\Controller
             unlink($path);  
             return $file;
         }
-        throw new \yii\web\ForbiddenHttpException();
+        throw new \yii\web\ForbiddenHttpException("Other");
     }
 
     public function actionUpload(){
@@ -153,21 +156,24 @@ class DocumentoController extends \yii\rest\Controller
         $request = Yii::$app->request;
         $id = $request->get('id');
         $device = $request->get('device');
+        if(strlen($device)<=0){
+            throw new \yii\web\ForbiddenHttpException("Unauthorized device");
+        }
         $userid = Yii::$app->user->id;
         if($userid <= 0){
-            throw new \yii\web\ForbiddenHttpException();
+            throw new \yii\web\ForbiddenHttpException("User not found");
         }
         $hash = sha1($device.".".$userid);
         $document = Document::findOne($id);
         if(!isset($document)){
-            throw new \yii\web\NotFoundHttpException();
+            throw new \yii\web\NotFoundHttpException("Document not found");
         }
         if($document->user_id != $userid){
-            throw new \yii\web\ForbiddenHttpException();
+            throw new \yii\web\ForbiddenHttpException("User is not document's owner");
         }
-        $authorized = Authorized::find(['user_id'=>$userid, 'device'=>$hash])->one();
+        $authorized = Authorized::find()->where(['user_id'=>$userid, 'device'=>$hash])->one();
         if(!isset($authorized)){
-            throw new \yii\web\ForbiddenHttpException();
+            throw new \yii\web\ForbiddenHttpException("Unauthorized device");
         }
         $allowed = array("pdf" => "application/octet-stream");
         $filetype = $_FILES["file"]["type"];
@@ -188,10 +194,21 @@ class DocumentoController extends \yii\rest\Controller
         $path = $userpath . DIRECTORY_SEPARATOR . $id . '.pdf';
         if (in_array($filetype, $allowed)) {
             if(move_uploaded_file($_FILES["file"]["tmp_name"], $path)){
-                $json = [
-                    'Status' => 'SUCCESS',
-                    'Message' => 'Documento subido con éxito',
-                ];
+                $document->uploaded = 1;
+                if($document->save()){
+                    Document::deleteAll(['user_id'=>$userid, 'uploaded'=>0]);
+                    $json = [
+                        'Status' => 'SUCCESS',
+                        'Message' => 'Documento subido con éxito',
+                    ];
+                }
+                else{
+                    unlink($path);
+                    $json = [
+                        'Status' => 'ERROR',
+                        'Message' => 'No se pudo grabar el documento subido',
+                    ];
+                }
             }   
             else{
                 $json = [

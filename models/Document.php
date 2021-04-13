@@ -9,6 +9,7 @@ use Yii;
  *
  * @property int $id
  * @property int $user_id
+ * @property bool $uploaded
  *
  * @property User $user
  */
