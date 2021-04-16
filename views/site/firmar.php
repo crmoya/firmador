@@ -50,7 +50,7 @@ if(isset($result)){
 
 $script2 = <<< JS
     $(document).ready(function(e){
-        if($resultOK){
+        if("$resultOK"){
             Swal.fire({
                 icon: "info",
                 title: "Iniciando el proceso de firma...",
