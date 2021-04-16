@@ -8,14 +8,14 @@ $this->title = 'Firmador';
 ?>
 <div class="site-index">
     <div class="telon">
-        <span style="font-size:15pt;" id="gear-telon">Por favor espere... <img src="images/gear.gif" height="33" style="position:relative;top:-5px;" /></span>
+        <span style="font-size:15pt;" id="gear-telon">Por favor espere... <img src="<?=Yii::getAlias("@web")?>/images/gear.gif" height="33" style="position:relative;top:-5px;" /></span>
     </div>
     <div class="principal">
         <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
             <?= $form->field($model, 'file')->fileInput(['class'=>'form-control input-file']) ?>
             <button class="btn btn-success">Aceptar y Firmar documento</button>
         <?php ActiveForm::end() ?>
-        <div class="col-lg-12" id="espereDocumento" style="display:none;"><span style="font-size:15pt;" id="gear">Por favor espere... <img src="images/gear.gif" height="33" style="position:relative;top:-5px;" /></span></div>
+        <div class="col-lg-12" id="espereDocumento" style="display:none;"><span style="font-size:15pt;" id="gear">Por favor espere... <img src="<?=Yii::getAlias("@web")?>/images/gear.gif" height="33" style="position:relative;top:-5px;" /></span></div>
         <div id="previewer"></div>
     </div>
 </div>
