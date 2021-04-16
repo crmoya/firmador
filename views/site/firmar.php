@@ -40,29 +40,28 @@ $script = <<< JS
 JS;
 $this->registerJs($script);
 
-if(isset($result)){
-    $script = <<< JS
+$script2 = <<< JS
+$(document).ready(function(e){
+    if($result > -1){
+        Swal.fire({
+            icon: "info",
+            title: "Iniciando el proceso de firma...",
+            text: "El documento está siendo cargado en su equipo... por favor, espere mientras se inicia el proceso de firma.",
+        });
+        callWS($result);
+    }
+    else{
+        Swal.fire({
+            icon: "error",
+            title: "Archivo no seleccionado",
+            text: "Por favor, seleccione un documento PDF.",
+        });
+    }
+});
 
+JS;
 
-    $(document).ready(function(e){
-        if($result > -1){
-            Swal.fire({
-                icon: "info",
-                title: "Iniciando el proceso de firma...",
-                text: "El documento está siendo cargado en su equipo... por favor, espere mientras se inicia el proceso de firma.",
-            });
-            callWS($result);
-        }
-        else{
-            Swal.fire({
-                icon: "error",
-                title: "Archivo no seleccionado",
-                text: "Por favor, seleccione un documento PDF.",
-            });
-        }
-    });
-    
-    JS;
-    $this->registerJs($script);
+if(isset($result)){   
+    $this->registerJs($script2);
 }
 
