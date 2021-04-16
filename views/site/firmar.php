@@ -42,8 +42,10 @@ $this->registerJs($script);
 
 
 $resultOK = false;
+$resultado = -1;
 if(isset($result)){   
     $resultOK = $result > -1;
+    $resultado = $result;
 }
 
 $script2 = <<< JS
@@ -54,7 +56,7 @@ $script2 = <<< JS
                 title: "Iniciando el proceso de firma...",
                 text: "El documento está siendo cargado en su equipo... por favor, espere mientras se inicia el proceso de firma.",
             });
-            callWS($result);
+            callWS($resultado);
         }
         else{
             Swal.fire({
