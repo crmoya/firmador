@@ -1,5 +1,4 @@
 function renderPDF(dataURI){
-
   var BASE64_MARKER = ';base64,';
 
   var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
@@ -63,17 +62,33 @@ function renderPDF(dataURI){
   });
 }
 
-function callWS(idDocumento){
+function callWS(documentos){
   const url='http://127.0.0.1:8080/firmador';
   try {
-    var data = { idDocumento: idDocumento };
+    var data = { documentos: documentos };
     $.post(url,JSON.stringify(data), function(msg) {
       var respuesta = JSON.parse(msg);
       if(respuesta.Status){
+        let timerInterval
+
         Swal.fire({
-          icon: "success",
-          title: "Documento firmado con éxito",
+          icon: 'success',
+          title: '¡Documentos subidos con éxito!',
           text: "El documento se ha firmado y subido al repositorio con éxito.",
+          html:
+          'Será redirigido al inicio automáticamente en <strong></strong> segundos.<br/><br/>',
+          timer: 3000,
+          willOpen: () => {
+          timerInterval = setInterval(() => {
+              Swal.getContent().querySelector('strong')
+              .textContent = (Swal.getTimerLeft() / 1000)
+                  .toFixed(0)
+          }, 100)
+          },
+          willClose: () => {
+              clearInterval(timerInterval)
+              window.location = 'index';
+          }
         });
       }
       else{

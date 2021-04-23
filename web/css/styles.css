@@ -1,4 +1,6 @@
-
+.ver:hover{
+    cursor:pointer;
+}
 .texto {
     color: darkgreen;
     font-size: 14pt;

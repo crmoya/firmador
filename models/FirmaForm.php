@@ -11,12 +11,19 @@ use yii\helpers\HtmlPurifier;
  */
 class FirmaForm extends Model
 {
-    public $file;
+    public $files;
 
     public function rules()
     {
         return [
-            [['file'], 'file', 'skipOnEmpty' => false, 'extensions' => 'pdf'],
+            [['files'], 'file', 'skipOnEmpty' => false, 'extensions' => 'pdf', 'maxFiles' => 20],
+        ];
+    }
+
+    public function attributeLabels()
+    {
+        return [
+            'files'=>'Documentos',
         ];
     }
     
@@ -35,16 +42,28 @@ class FirmaForm extends Model
         if(!is_dir($userpath)){
             mkdir($userpath);
         }
-        if ($this->validate()) {
-            $document = new Document();
-            $document->user_id = $userid;
-            $document->name = HtmlPurifier::process($this->file->name);
-            if($document->save()){
-                if($this->file->saveAs($userpath . DIRECTORY_SEPARATOR . $document->id . ".pdf")){
-                    return $document->id;
-                }
-            }            
+
+        //primero limpiar el directorio de los documentos no subidos
+        Document::deleteAll(['user_id'=>$userid,'uploaded'=>0]);
+        $files=\yii\helpers\FileHelper::findFiles($userpath);
+        if (isset($files[0])) {
+            foreach ($files as $file) {
+                unlink($file);
+            }
         }
-        return -1;
+        $documentos = 0;
+        if ($this->validate()) {
+            foreach ($this->files as $file) {
+                $document = new Document();
+                $document->user_id = $userid;
+                $document->name = HtmlPurifier::process($file->name);
+                if($document->save()){
+                    if($file->saveAs($userpath . DIRECTORY_SEPARATOR . $document->id . ".pdf")){
+                        $documentos++;
+                    }
+                }     
+            }     
+        }
+        return $documentos;
     }
 }

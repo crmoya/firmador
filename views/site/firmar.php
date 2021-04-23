@@ -11,55 +11,14 @@ $this->title = 'Firmador';
         <span style="font-size:15pt;" id="gear-telon">Por favor espere... <img src="<?=Yii::getAlias("@web")?>/images/gear.gif" height="33" style="position:relative;top:-5px;" /></span>
     </div>
     <div class="principal">
+        <?php if($mensaje!=""):?>
+        <div class="alert alert-warning">
+            <?=$mensaje?>
+        </div>
+        <?php endif;?>
         <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
-            <?= $form->field($model, 'file')->fileInput(['class'=>'form-control input-file']) ?>
-            <button class="btn btn-success">Aceptar y Firmar documento</button>
+            <?= $form->field($model, 'files[]')->fileInput(['multiple' => true, 'accept' => '.pdf', 'class'=>'form-control input-file']) ?>
+            <button class="btn btn-success">Cargar y previsualizar documentos</button>
         <?php ActiveForm::end() ?>
-        <div class="col-lg-12" id="espereDocumento" style="display:none;"><span style="font-size:15pt;" id="gear">Por favor espere... <img src="<?=Yii::getAlias("@web")?>/images/gear.gif" height="33" style="position:relative;top:-5px;" /></span></div>
-        <div id="previewer"></div>
     </div>
 </div>
-
-
-<?php
-
-$script = <<< JS
-    $('.input-file').change(function(e){
-        readURL(this);
-    });
-
-    function readURL(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();            
-            reader.onload = function(e) {
-                renderPDF(e.target.result);
-            }            
-            reader.readAsDataURL(input.files[0]); 
-        }
-    }
-JS;
-$this->registerJs($script);
-
-if(isset($result)){
-    $script = '' .
-    '$(document).ready(function(e){     '.
-    '    if( ' . $result . ' > -1){             '.
-    '        Swal.fire({                '.
-    '            icon: "info",          '.
-    '            title: "Iniciando el proceso de firma...", '.
-    '            text: "El documento está siendo cargado en su equipo... por favor, espere mientras se inicia el proceso de firma.", '.
-    '        }); '.
-    '        callWS('. $result . '); '.
-    '    } '.
-    '    else{ '.
-    '        Swal.fire({ '.
-    '            icon: "error", '.
-    '            title: "Archivo no seleccionado", '.
-    '            text: "Por favor, seleccione un documento PDF.", '.
-    '        }); '.
-    '    } '.
-    '}); '.
-    '; ';
-    $this->registerJs($script);
-}
-

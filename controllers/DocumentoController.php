@@ -22,7 +22,7 @@ class DocumentoController extends \yii\rest\Controller
         $behaviors['authenticator'] = [
             'class' => JwtHttpBearerAuth::class,
             'optional' => [
-                'login', 'refresh',
+                'login', 'refresh', 
             ],
         ];
 
@@ -111,6 +111,8 @@ class DocumentoController extends \yii\rest\Controller
         $request = Yii::$app->request;
         $id = $request->get('id');
         $device = $request->get('device');
+
+        
         if(strlen($device)<=0){
             throw new \yii\web\ForbiddenHttpException("Unauthorized device");
         }
@@ -196,7 +198,6 @@ class DocumentoController extends \yii\rest\Controller
             if(move_uploaded_file($_FILES["file"]["tmp_name"], $path)){
                 $document->uploaded = 1;
                 if($document->save()){
-                    Document::deleteAll(['user_id'=>$userid, 'uploaded'=>0]);
                     $json = [
                         'Status' => 'SUCCESS',
                         'Message' => 'Documento subido con éxito',
