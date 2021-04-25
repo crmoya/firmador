@@ -58,7 +58,6 @@ class SiteController extends Controller
     public function actionIndex()
     {
         $model = new FirmaForm();
-        $mensaje = "";
         if (Yii::$app->request->isPost) {
             $model->files = UploadedFile::getInstances($model, 'files');
             $result = $model->upload();
@@ -68,16 +67,24 @@ class SiteController extends Controller
                 return $this->render('previsualizar',['unsigned'=>$unsigned]);
             }
             else{
-                $mensaje = "ATENCIÓN: NO SE PUDIERON CARGAR LOS DOCUMENTOS, POR FAVOR REINTENTE.";
+                Yii::$app->session->setFlash('error', "No se pudieron cargar los documentos, por favor reintente.");
             }
         }
-        return $this->render('firmar',['model'=>$model,'mensaje'=>$mensaje]);
+        return $this->render('firmar',['model'=>$model]);
     }
 
     public function actionUploadSignature(){
         $model = new ImagenFirmaForm();
-        $mensaje = "";
-        return $this->render('upload-signature',['model'=>$model,'mensaje'=>$mensaje]);
+        if (Yii::$app->request->isPost) {
+            $model->imageFile = UploadedFile::getInstance($model, 'imageFile');
+            if ($model->upload()) {
+                Yii::$app->session->setFlash('success', "Imagen cargada con éxito.");
+            }
+            else{
+                Yii::$app->session->setFlash('error', "No se pudo cargar la imagen, por favor reintente.");
+            }
+        }
+        return $this->render('upload-signature',['model'=>$model]);
     }
 
     /**

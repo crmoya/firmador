@@ -4,7 +4,6 @@ namespace app\models;
 
 use Yii;
 use yii\base\Model;
-use yii\helpers\HtmlPurifier;
 
 /**
  * ContactForm is the model behind the contact form.
@@ -29,41 +28,28 @@ class ImagenFirmaForm extends Model
     
     public function upload()
     {
-        $pathdocuments = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents';
-        if(!is_dir($pathdocuments)){
-            mkdir($pathdocuments);
-        } 
-        $pathunsigned = $pathdocuments. DIRECTORY_SEPARATOR . "unsigned";
-        if(!is_dir($pathunsigned)){
-            mkdir($pathunsigned);
+        $pathsignature = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'signature';
+        if(!is_dir($pathsignature)){
+            mkdir($pathsignature);
         } 
         $userid = Yii::$app->user->id;
-        $userpath = $pathunsigned . DIRECTORY_SEPARATOR . $userid;
+        $userpath = $pathsignature . DIRECTORY_SEPARATOR . $userid;
         if(!is_dir($userpath)){
             mkdir($userpath);
         }
 
-        //primero limpiar el directorio de los documentos no subidos
-        Document::deleteAll(['user_id'=>$userid,'uploaded'=>0]);
+        //primero limpiar el directorio de alguna firma anterior
         $files=\yii\helpers\FileHelper::findFiles($userpath);
         if (isset($files[0])) {
             foreach ($files as $file) {
                 unlink($file);
             }
         }
-        $documentos = 0;
         if ($this->validate()) {
-            foreach ($this->files as $file) {
-                $document = new Document();
-                $document->user_id = $userid;
-                $document->name = HtmlPurifier::process($file->name);
-                if($document->save()){
-                    if($file->saveAs($userpath . DIRECTORY_SEPARATOR . $document->id . ".pdf")){
-                        $documentos++;
-                    }
-                }     
-            }     
+            $this->imageFile->saveAs($userpath . DIRECTORY_SEPARATOR . "firma.jpg");
+            return true;
+        } else {
+            return false;
         }
-        return $documentos;
     }
 }
