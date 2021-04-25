@@ -99,7 +99,9 @@
 .progressBar .active:after {
     background-color: #a8e6cf;
 }
-
+.firma{
+    height:200px;
+}
 #previewer{
     position: relative;
     top: 10px;
