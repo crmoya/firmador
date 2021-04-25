@@ -44,7 +44,8 @@ class Authorized extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'device' => 'Device',
+            'device' => 'Identificador',
+            'name' => 'Equipo',
         ];
     }
 

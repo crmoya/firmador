@@ -8,21 +8,18 @@ use yii\helpers\Url;
 $this->title = 'Firmador';
 ?>
 <div class="site-index">
-    <div class="telon">
-        <span style="font-size:15pt;" id="gear-telon">Por favor espere... <img src="<?=Yii::getAlias("@web")?>/images/gear.gif" height="33" style="position:relative;top:-5px;" /></span>
-    </div>
     <div class="principal">
-        <p>
-            Seleccione los documentos que desea firmar. 
+        <h4>
+            Seleccione los documentos que desea firmar. <br/>
             <b>Puede previsualizarlos haciendo click en la lupa.</b>
-        </p>
+        </h4>
         <div class="row">
         <?php foreach($unsigned as $document):?>        
             <div class="col-md-3" style="text-align:center;">
+                <input class="check" id="<?=$document->id;?>" type="checkbox" checked>
                 <?=Html::img('@web/images/pdf.png', ['alt' => $document->name,'height'=>40])?>
                 <br/>
-                <input class="check" id="<?=$document->id;?>" type="checkbox" checked>
-                <?=Html::a('<i class="fa fa-fw fa-search"></i>', ['download', 'id' => $document->id], ['class' => 'profile-link ver','target'=>'_blank'])?>  
+                <?=Html::a('<i class="fa fa-fw fa-search"></i>', ['document/download', 'id' => $document->id], ['class' => 'profile-link ver','target'=>'_blank'])?>  
                 <br/>
                 <?=$document->name?>              
             </div>
@@ -38,6 +35,7 @@ $this->title = 'Firmador';
 
 
 <?php
+$url = Url::to(['document/delete']);
 $script = <<< JS
 
     $(document).ready(function(e){ 
@@ -59,7 +57,7 @@ $script = <<< JS
                 }
             });
             $.get(
-                'delete',
+                '$url',
                 { itemsJson: JSON.stringify(not_checked) }
             ).done(function(resp){
                 callWS(checked);

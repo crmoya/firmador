@@ -24,8 +24,6 @@ class AppAsset extends AssetBundle
         'css/styles.css',
     ];
     public $js = [
-        '//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.worker.min.js',
-        '//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.min.js',
         'js/script.js',
         '//cdn.jsdelivr.net/npm/sweetalert2@10',
         '//kit.fontawesome.com/66ac3e2c70.js',

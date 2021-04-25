@@ -7,10 +7,9 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 use app\models\LoginForm;
-use app\models\ContactForm;
 use app\models\Document;
 use app\models\FirmaForm;
-use yii\helpers\Json;
+use app\models\ImagenFirmaForm;
 use yii\web\UploadedFile;
 
 class SiteController extends Controller
@@ -23,10 +22,10 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout','index','uploaded','view', 'download', 'delete'],
+                'only' => ['logout','index','upload-signature'],
                 'rules' => [
                     [
-                        'actions' => ['logout','index','uploaded','view', 'download', 'delete'],
+                        'actions' => ['logout','index','upload-signature'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -75,92 +74,10 @@ class SiteController extends Controller
         return $this->render('firmar',['model'=>$model,'mensaje'=>$mensaje]);
     }
 
-    public function actionUploaded()
-    {
-        $subidos = Document::find()->where(['user_id'=>Yii::$app->user->id,'uploaded'=>1])->orderBy(['id'=>'DESC'])->all();
-        return $this->render('subidos',['subidos'=>$subidos]);
-    }
-
-    public function actionDelete($itemsJson){
-        $userid = Yii::$app->user->id;
-        if($userid <= 0){
-            throw new \yii\web\ForbiddenHttpException();
-        }
-        $items = Json::decode($itemsJson);
-        $ok = true;
-        foreach($items as $documentId){
-            $document = Document::findOne($documentId);
-            if(isset($document)){
-                if($document->user_id != $userid || $document->uploaded != 0){
-                    throw new \yii\web\ForbiddenHttpException();
-                }
-                $pathdocuments = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents';
-                $pathunsigned = $pathdocuments. DIRECTORY_SEPARATOR . "unsigned";
-                $path = $pathunsigned . DIRECTORY_SEPARATOR . $userid . DIRECTORY_SEPARATOR . $documentId . '.pdf';
-                if(file_exists($path)){
-                    if(!unlink($path)){
-                        $ok = false;
-                    }
-                }
-                else{
-                    $ok = false;
-                }
-            }
-        }
-        if($ok){
-            echo Json::encode("OK");
-        }
-        else{
-            throw new \yii\web\NotFoundHttpException();
-        }
-    }
-
-    public function actionDownload($id)
-    {
-        $userid = Yii::$app->user->id;
-        if($userid <= 0){
-            throw new \yii\web\ForbiddenHttpException();
-        }
-        $document = Document::findOne($id);
-        if(!isset($document)){
-            throw new \yii\web\NotFoundHttpException();
-        }
-        if($document->user_id != $userid || $document->uploaded != 0){
-            throw new \yii\web\ForbiddenHttpException();
-        }
-        $pathdocuments = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents';
-        $pathunsigned = $pathdocuments. DIRECTORY_SEPARATOR . "unsigned";
-        $path = $pathunsigned . DIRECTORY_SEPARATOR . $userid . DIRECTORY_SEPARATOR . $id . '.pdf';
-        $fullname = realpath($path);
-        if(file_exists($fullname)){
-            $file = Yii::$app->response->sendFile($fullname,$document->name, ['inline'=>true]); 
-            return $file;
-        }
-        throw new \yii\web\NotFoundHttpException();
-    }
-
-    public function actionView($id)
-    {
-        $userid = Yii::$app->user->id;
-        if($userid <= 0){
-            throw new \yii\web\ForbiddenHttpException();
-        }
-        $document = Document::findOne($id);
-        if(!isset($document)){
-            throw new \yii\web\NotFoundHttpException();
-        }
-        if($document->user_id != $userid || $document->uploaded != 1){
-            throw new \yii\web\ForbiddenHttpException();
-        }
-        $pathdocuments = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents';
-        $pathsigned = $pathdocuments. DIRECTORY_SEPARATOR . "signed";
-        $path = $pathsigned . DIRECTORY_SEPARATOR . $userid . DIRECTORY_SEPARATOR . $id . '.pdf';
-        $fullname = realpath($path);
-        if(file_exists($fullname)){
-            $file = Yii::$app->response->sendFile($fullname,$document->name); 
-            return $file;
-        }
-        throw new \yii\web\NotFoundHttpException();
+    public function actionUploadSignature(){
+        $model = new ImagenFirmaForm();
+        $mensaje = "";
+        return $this->render('upload-signature',['model'=>$model,'mensaje'=>$mensaje]);
     }
 
     /**

@@ -10,6 +10,8 @@ use Yii;
  * @property int $id
  * @property int $user_id
  * @property bool $uploaded
+ * @property string|null $name
+ * @property string|null $signed_at
  *
  * @property User $user
  */
@@ -31,6 +33,9 @@ class Document extends \yii\db\ActiveRecord
         return [
             [['user_id'], 'required'],
             [['user_id'], 'integer'],
+            [['uploaded'], 'boolean'],
+            [['name'], 'string'],
+            [['signed_at'], 'safe'],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
@@ -43,6 +48,9 @@ class Document extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
+            'uploaded' => 'Uploaded',
+            'name' => 'Documento',
+            'signed_at' => 'Fecha firma',
         ];
     }
 

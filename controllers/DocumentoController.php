@@ -197,6 +197,7 @@ class DocumentoController extends \yii\rest\Controller
         if (in_array($filetype, $allowed)) {
             if(move_uploaded_file($_FILES["file"]["tmp_name"], $path)){
                 $document->uploaded = 1;
+                $document->signed_at = date("Y-m-d H:i:s");
                 if($document->save()){
                     $json = [
                         'Status' => 'SUCCESS',

@@ -2,89 +2,87 @@
 
 namespace app\controllers;
 
-use app\models\Authorized;
-use sizeg\jwt\JwtHttpBearerAuth;
 use Yii;
+use app\models\Authorized;
+use app\models\AuthorizedSearch;
+use yii\filters\AccessControl;
+use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
 
-class AuthorizedController extends \yii\rest\Controller
+/**
+ * AuthorizedController implements the CRUD actions for Authorized model.
+ */
+class AuthorizedController extends Controller
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function behaviors()
     {
-        $behaviors = parent::behaviors();
-        $behaviors['authenticator'] = [
-            'class' => JwtHttpBearerAuth::class,
-            'optional' => [
-                'login', 'refresh',
+        return [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['index','delete'],
+                'rules' => [
+                    [
+                        'actions' => ['index','delete'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
             ],
         ];
-
-        return $behaviors;
     }
 
+    /**
+     * Lists all Authorized models.
+     * @return mixed
+     */
+    public function actionIndex()
+    {
+        $searchModel = new AuthorizedSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-    public function actionAdd() {
-        $request = Yii::$app->request;
-        $device = $request->get('device');
-        $userid = Yii::$app->user->id;
-        $json = [
-            'Status' => 'ERROR',
-            'Message' => 'No fue posible autorizar el dispositivo.',
-        ];
-        $hash = sha1($device.".".$userid);
-        $authorized = Authorized::find()->where(['user_id'=>$userid,'device'=>$hash])->one();
-        if(isset($authorized)){
-            $json = [
-                'Status' => 'SUCCESS',
-                'Message' => 'Dispositivo ya ha sido autorizado anteriormente.',
-            ];
-        }
-        else{
-            $authorized = new Authorized();
-            $authorized->user_id = $userid;
-            $authorized->device = $hash;
-            if($authorized->save()){
-                $json = [
-                    'Status' => 'SUCCESS',
-                    'Message' => 'Dispositivo autorizado con éxito.',
-                ];
-            }
-        }
-        return $this->asJson($json);
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
-    public function actionRemove() {
-        $request = Yii::$app->request;
-        $device = $request->get('device');
-        $userid = Yii::$app->user->id;
-        $json = [
-            'Status' => 'ERROR',
-            'Message' => 'No fue posible desvincular el dispositivo.',
-        ];
-        $hash = sha1($device.".".$userid);
-        $authorized = Authorized::find()->where(['user_id'=>$userid,'device'=>$hash])->one();
-        if(isset($authorized)){
-            if(Authorized::deleteAll(['user_id'=>$userid,'device'=>$hash])>0){
-                $json = [
-                    'Status' => 'SUCCESS',
-                    'Message' => 'Dispositivo ha sido desvinculado con éxito.',
-                ];
-            }
-            else{
-                $json = [
-                    'Status' => 'ERROR',
-                    'Message' => 'Dispositivo no se pudo desvincular.',
-                ];
-            }
+    /**
+     * Deletes an existing Authorized model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionDelete($id)
+    {
+        $this->findModel($id)->delete();
+
+        return $this->redirect(['index']);
+    }
+
+    /**
+     * Finds the Authorized model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Authorized the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($id)
+    {
+        if (($model = Authorized::findOne($id)) !== null) {
+            return $model;
         }
-        else{
-            $json = [
-                'Status' => 'ERROR',
-                'Message' => 'Dispositivo aún no ha sido autorizado.',
-            ];
-        }
-        return $this->asJson($json);
+
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

@@ -93,9 +93,23 @@ function callWS(documentos){
       }
       else{
         Swal.fire({
-          icon: "error",
-          title: "ERROR",
+          icon: 'error',
+          title: 'ERROR',
           text: respuesta.Message,
+          html:
+          'Será redirigido al inicio automáticamente en <strong></strong> segundos.<br/><br/>',
+          timer: 3000,
+          willOpen: () => {
+          timerInterval = setInterval(() => {
+              Swal.getContent().querySelector('strong')
+              .textContent = (Swal.getTimerLeft() / 1000)
+                  .toFixed(0)
+          }, 100)
+          },
+          willClose: () => {
+              clearInterval(timerInterval)
+              window.location = 'index';
+          }
         });
       }
     }).fail(function() {
