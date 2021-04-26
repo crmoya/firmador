@@ -122,5 +122,4 @@ function callWS(documentos){
   } catch (e) {
     console.log(e);
   }
-  
 }
