@@ -21,7 +21,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            'id',
             'name:ntext',
             [
                 'attribute' => 'signed_at',
