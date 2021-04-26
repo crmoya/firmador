@@ -149,6 +149,35 @@ class DocumentoController extends \yii\rest\Controller
         throw new \yii\web\ForbiddenHttpException("Other");
     }
 
+    public function actionSignature() {
+        $request = Yii::$app->request;
+        $device = $request->get('device');
+
+        if(strlen($device)<=0){
+            throw new \yii\web\ForbiddenHttpException("Unauthorized device");
+        }
+        $userid = Yii::$app->user->id;
+        if($userid <= 0){
+            throw new \yii\web\ForbiddenHttpException("User not found");
+        }
+        $hash = sha1($device.".".$userid);
+        $authorized = Authorized::find()->where(['user_id'=>$userid, 'device'=>$hash])->one();
+        if(!isset($authorized)){
+            throw new \yii\web\ForbiddenHttpException("Unauthorized device");
+        }
+        $pathsignature = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'signature';
+        if(!is_dir($pathsignature)){
+            mkdir($pathsignature);
+        } 
+        $path = $pathsignature . DIRECTORY_SEPARATOR . $userid . DIRECTORY_SEPARATOR . 'firma.jpg';
+        $fullname = realpath($path);
+        if(file_exists($fullname)){
+            $file = Yii::$app->response->sendFile($fullname); 
+            return $file;
+        }
+        throw new \yii\web\ForbiddenHttpException("Other");
+    }
+
     public function actionUpload(){
         $json = [
             'Status' => 'ERROR',
