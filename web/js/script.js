@@ -87,7 +87,7 @@ function callWS(documentos){
           },
           willClose: () => {
               clearInterval(timerInterval)
-              window.location = 'index';
+              window.location = '/firmador/web/site/index';
           }
         });
       }
@@ -108,7 +108,7 @@ function callWS(documentos){
           },
           willClose: () => {
               clearInterval(timerInterval)
-              window.location = 'index';
+              window.location = '/firmador/web/site/index';
           }
         });
       }
