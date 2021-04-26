@@ -63,7 +63,7 @@ function renderPDF(dataURI){
 }
 
 function callWS(documentos){
-  const url='http://127.0.0.1:8080/firmador';
+  const url='http://localhost:8080/firmador';
   try {
     var data = { documentos: documentos };
     $.post(url,JSON.stringify(data), function(msg) {
