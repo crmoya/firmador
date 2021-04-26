@@ -112,7 +112,6 @@ class DocumentoController extends \yii\rest\Controller
         $id = $request->get('id');
         $device = $request->get('device');
 
-        
         if(strlen($device)<=0){
             throw new \yii\web\ForbiddenHttpException("Unauthorized device");
         }
