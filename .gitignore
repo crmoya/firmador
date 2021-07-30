@@ -37,3 +37,4 @@ tests/_support/_generated
 /documents/signed
 
 /signature
+composer.lock
