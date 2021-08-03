@@ -67,6 +67,8 @@ class DocumentSearch extends Document
         $query->andFilterWhere(['like', 'name', $this->name])
               ->andFilterWhere(['like', 'signed_at', $this->signed_at]);
 
+        $query->orderBy(['id'=> SORT_DESC]);
+
         return $dataProvider;
     }
 }

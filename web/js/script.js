@@ -75,8 +75,7 @@ function callWS(documentos){
           icon: 'success',
           title: '¡Documentos subidos con éxito!',
           text: "El documento se ha firmado y subido al repositorio con éxito.",
-          html:
-          'Será redirigido al inicio automáticamente en <strong></strong> segundos.<br/><br/>',
+          html: 'Será redirigido al inicio automáticamente en <strong></strong> segundos.<br/><br/>',
           timer: 3000,
           willOpen: () => {
           timerInterval = setInterval(() => {
@@ -87,7 +86,7 @@ function callWS(documentos){
           },
           willClose: () => {
               clearInterval(timerInterval)
-              window.location = '/firmador/web/site/index';
+              window.location = '/firmador/web/document/uploaded';
           }
         });
       }
@@ -96,8 +95,7 @@ function callWS(documentos){
           icon: 'error',
           title: 'ERROR',
           text: respuesta.Message,
-          html:
-          'Será redirigido al inicio automáticamente en <strong></strong> segundos.<br/><br/>',
+          html: 'Será redirigido al inicio automáticamente en <strong></strong> segundos.<br/><br/>',
           timer: 3000,
           willOpen: () => {
           timerInterval = setInterval(() => {

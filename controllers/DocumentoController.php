@@ -255,4 +255,35 @@ class DocumentoController extends \yii\rest\Controller
         return $this->asJson($json);
     }
 
+    public function actionGetName() {
+
+        $request = Yii::$app->request;
+        $id = $request->get('id');
+        $device = $request->get('device');
+
+        if(strlen($device)<=0){
+            throw new \yii\web\ForbiddenHttpException("Unauthorized device");
+        }
+        $userid = Yii::$app->user->id;
+        if($userid <= 0){
+            throw new \yii\web\ForbiddenHttpException("User not found");
+        }
+        $hash = sha1($device.".".$userid);
+        $document = Document::findOne($id);
+        if(!isset($document)){
+            throw new \yii\web\NotFoundHttpException("Document not found");
+        }
+        if($document->user_id != $userid){
+            throw new \yii\web\ForbiddenHttpException("User is not document's owner");
+        }
+        
+        $authorized = Authorized::find()->where(['user_id'=>$userid, 'device'=>$hash])->one();
+        if(!isset($authorized)){
+            throw new \yii\web\ForbiddenHttpException("Unauthorized device");
+        }
+        $nombre = substr($document->name,0,strlen($document->name) - 4);
+        
+        return $nombre;
+    }
+
 }

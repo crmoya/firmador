@@ -91,7 +91,7 @@ class DocumentController extends Controller
         $searchModel = new DocumentSearch();
         Document::deleteAll(['user_id'=>$userid,'uploaded'=>0]);
         $dataProvider = new ActiveDataProvider([
-            'query' => Document::find()->where(['user_id'=>$userid,'uploaded'=>1])->orderBy(['id'=>'DESC']),
+            'query' => Document::find()->where(['user_id'=>$userid,'uploaded'=>1])->orderBy(['id'=>SORT_DESC]),
             'pagination' => [
                 'pageSize' => 20,
             ],
