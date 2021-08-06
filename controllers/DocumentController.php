@@ -25,7 +25,7 @@ class DocumentController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['uploaded','download','view','delete'],
+                'only' => ['uploaded','download','delete'],
                 'rules' => [
                     [
                         'actions' => ['uploaded','download','delete'],
@@ -135,6 +135,7 @@ class DocumentController extends Controller
         if(!isset($document)){
             throw new \yii\web\NotFoundHttpException();
         }
+
         /*
         if($document->user_id != $userid || $document->uploaded != 1){
             throw new \yii\web\ForbiddenHttpException();
