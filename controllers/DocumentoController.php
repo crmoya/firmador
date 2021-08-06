@@ -216,12 +216,15 @@ class DocumentoController extends \yii\rest\Controller
         if(!is_dir($pathsigned)){
             mkdir($pathsigned);
         } 
+        /*
         $userpath = $pathsigned . DIRECTORY_SEPARATOR . $userid;
         if(!is_dir($userpath)){
             mkdir($userpath);
         }    
+        */
         
-        $path = $userpath . DIRECTORY_SEPARATOR . $id . '.pdf';
+        //$path = $userpath . DIRECTORY_SEPARATOR . $id . '.pdf';
+        $path = $pathsigned . DIRECTORY_SEPARATOR . $id . '.pdf';
         if (in_array($filetype, $allowed)) {
             if(move_uploaded_file($_FILES["file"]["tmp_name"], $path)){
                 $document->uploaded = 1;

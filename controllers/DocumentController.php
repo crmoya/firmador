@@ -28,7 +28,7 @@ class DocumentController extends Controller
                 'only' => ['uploaded','download','view','delete'],
                 'rules' => [
                     [
-                        'actions' => ['uploaded','download','view','delete'],
+                        'actions' => ['uploaded','download','delete'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -125,20 +125,24 @@ class DocumentController extends Controller
 
     public function actionView($id)
     {
+        /*
         $userid = Yii::$app->user->id;
         if($userid <= 0){
             throw new \yii\web\ForbiddenHttpException();
         }
+        */
         $document = Document::findOne($id);
         if(!isset($document)){
             throw new \yii\web\NotFoundHttpException();
         }
+        /*
         if($document->user_id != $userid || $document->uploaded != 1){
             throw new \yii\web\ForbiddenHttpException();
         }
+        */
         $pathdocuments = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'documents';
         $pathsigned = $pathdocuments. DIRECTORY_SEPARATOR . "signed";
-        $path = $pathsigned . DIRECTORY_SEPARATOR . $userid . DIRECTORY_SEPARATOR . $id . '.pdf';
+        $path = $pathsigned . DIRECTORY_SEPARATOR . $id . '.pdf';
         $fullname = realpath($path);
         if(file_exists($fullname)){
             $file = Yii::$app->response->sendFile($fullname,$document->name); 
