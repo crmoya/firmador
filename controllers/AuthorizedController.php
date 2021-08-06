@@ -21,12 +21,6 @@ class AuthorizedController extends Controller
     public function behaviors()
     {
         return [
-            'verbs' => [
-                'class' => VerbFilter::class,
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
             'access' => [
                 'class' => AccessControl::class,
                 'only' => ['index','delete'],
