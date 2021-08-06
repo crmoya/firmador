@@ -13,18 +13,22 @@ $this->title = 'Firmador';
             Seleccione los documentos que desea firmar. <br/>
             <b>Puede previsualizarlos haciendo click en la lupa.</b>
         </h4>
-        <div class="row">
+        <table class="table table-striped table-hover">
+            <tr>
+                <th>Documento</th>
+                <th style="text-align:center;" width="10%">Seleccionar</th>
+            </tr>
         <?php foreach($unsigned as $document):?>        
-            <div class="col-md-3" style="text-align:center;">
-                <input class="check" id="<?=$document->id;?>" type="checkbox" checked>
-                <?=Html::img('@web/images/pdf.png', ['alt' => $document->name,'height'=>40])?>
-                <br/>
-                <?=Html::a('<i class="fa fa-fw fa-search"></i>', ['document/download', 'id' => $document->id], ['class' => 'profile-link ver','target'=>'_blank'])?>  
-                <br/>
-                <?=$document->name?>              
-            </div>
+            <tr>
+                <td>
+                    <?=Html::a('<i class="fa fa-fw fa-search"></i><i style="color:red;" class="fa fa-fw fa-file-pdf-o"></i>&nbsp;&nbsp;&nbsp;&nbsp;' . $document->name, ['document/download', 'id' => $document->id], ['class' => 'profile-link ver','target'=>'_blank'])?>
+                </td>
+                <td style="text-align:center;">
+                    <input class="check" id="<?=$document->id;?>" type="checkbox" checked>
+                </td>
+            </tr>
         <?php endforeach;?>
-        </div>
+        </table>
         <div class="row">
             <div class="col-md-12" style="text-align:center">
                 <div id="sign" class="btn btn-success">Firmar documentos seleccionados</div>
