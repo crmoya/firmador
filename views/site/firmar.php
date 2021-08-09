@@ -4,7 +4,7 @@
 
 use yii\bootstrap\ActiveForm;
 
-$this->title = 'Firmador';
+$this->title = 'Firmar';
 ?>
 <div class="site-index">
     <div class="principal">

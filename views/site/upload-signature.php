@@ -5,7 +5,7 @@
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Html;
 
-$this->title = 'Firmador';
+$this->title = 'Imagen de mi firma';
 ?>
 <div class="site-index">
     <div class="principal">
