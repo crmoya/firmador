@@ -6,8 +6,13 @@ use Yii;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
+use app\validators\RutValidator;
+
 class User extends ActiveRecord implements IdentityInterface
 {
+
+    public $password_repeat;
+
     public static function tableName()
     {
         return 'user';
@@ -88,7 +93,27 @@ class User extends ActiveRecord implements IdentityInterface
     public function validatePassword($password) {
         return Yii::$app->security->validatePassword($password, $this->password);
     }
-
     
+    public function attributeLabels()
+    {
+        return [
+            'username' => 'RUT',
+            'name' => 'Nombre',
+            'password_repeat' => 'Repetir clave',
+            'password' => 'Clave',
+        ];
+    }
+
+    public function rules()
+    {
+        return [
+            [['username','password','password_repeat','name','rol'], 'required'],
+            [['username'], RutValidator::class],
+            [['username'], 'string', 'max' => 15],
+            [['name'], 'string', 'max' => 200],
+            ['username','unique'],
+            ['password', 'compare', 'compareAttribute' => 'password_repeat'],
+        ];
+    }
 
 }

@@ -63,6 +63,7 @@ AppAsset::register($this);
                                             ["label" => "Mis documentos firmados", "url" => ["document/uploaded"], "icon" => "file-o"],
                                             ["label" => "Mis dispositivos autorizados", "url" => ["authorized/index"], "icon" => "desktop"],
                                             ["label" => "Imagen de mi firma", "url" => ["site/upload-signature"], "icon" => "signature"],
+                                            ["label" => "Usuarios", "url" => ["user/index"], "icon" => "users",'visible'=>Yii::$app->user->can('administrador')],
                                             //["label" => "Error page", "url" => ["site/error-page"], "icon" => "close"],
                                             /*[
                                             "label" => "Widgets",
