@@ -184,8 +184,8 @@ AppAsset::register($this);
                                         <li>
                                             <a href="javascript:;">Help</a>
                                         </li>-->
-                                        <li><a href="<?= Url::to(['site/logout']) ?>"><i class="fa fa-sign-out pull-right"></i> Salir</a>
-                                        </li>
+                                        <li><a href="<?= Url::to(['user/password']) ?>"><i class="fa fa-key pull-right"></i> Cambiar mi clave</a></li>
+                                        <li><a href="<?= Url::to(['site/logout']) ?>"><i class="fa fa-sign-out pull-right"></i> Salir</a></li>
                                     </ul>
                                 </li>
                                 <!--
@@ -290,7 +290,6 @@ AppAsset::register($this);
                     </div>
                 <?php endif; ?>
                 <div class="clearfix"></div>
-
                 <?= $content ?>
             </div>
             <!-- /page content -->

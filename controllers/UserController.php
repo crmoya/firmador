@@ -2,9 +2,11 @@
 
 namespace app\controllers;
 
+use app\models\PasswordForm;
 use Yii;
 use app\models\User;
 use app\models\UserSearch;
+use Exception;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -23,12 +25,17 @@ class UserController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['create','index','view','delete'],
+                'only' => ['create','index','view','delete','password'],
                 'rules' => [
                     [
                         'actions' => ['create','index','view','delete'],
                         'allow' => true,
                         'roles' => ['administrador'],
+                    ],
+                    [
+                        'actions' => ['password'],
+                        'allow' => true,
+                        'roles' => ['@'],
                     ],
                 ],
             ],
@@ -39,6 +46,37 @@ class UserController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function actionPassword()
+    {
+
+        if(Yii::$app->user->isGuest) {
+            throw new Exception("No ha iniciado sesión.");
+        }
+        $model = new PasswordForm();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $user = User::findOne(Yii::$app->user->id);
+            if(isset($user)){
+                if(Yii::$app->security->validatePassword($model->claveAntigua, $user->password)){
+                    $user->password = Yii::$app->security->generatePasswordHash($model->claveNueva);
+                    $user->password_repeat = $user->password;
+                    if($user->save()){
+                        Yii::$app->session->setFlash('success', "Clave cambiada correctamente.");
+                        $model = new PasswordForm();
+                    }
+                    else{
+                        Yii::$app->session->setFlash('error', "ERROR: no se pudo cambiar su clave, reintente.");
+                    }
+                }
+                else{
+                    Yii::$app->session->setFlash('error', "ERROR: Clave actual incorrecta.");
+                }
+            }
+        }
+        return $this->render('password', [
+            'model' => $model,
+        ]);
     }
 
     /**
