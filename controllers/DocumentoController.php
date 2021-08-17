@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\Authorized;
 use app\models\Document;
+use app\models\Message;
 use app\models\User;
 use sizeg\jwt\JwtHttpBearerAuth;
 use Yii;
@@ -287,6 +288,36 @@ class DocumentoController extends \yii\rest\Controller
         $nombre = substr($document->name,0,strlen($document->name) - 4);
         
         return $nombre;
+    }
+
+    public function actionGetMessage() {
+
+        $request = Yii::$app->request;
+        $id = $request->get('id');
+        $device = $request->get('device');
+
+        if(strlen($device)<=0){
+            throw new \yii\web\ForbiddenHttpException("Unauthorized device");
+        }
+        $userid = Yii::$app->user->id;
+        if($userid <= 0){
+            throw new \yii\web\ForbiddenHttpException("User not found");
+        }
+        $hash = sha1($device.".".$userid);
+        $message = Message::find()->where(['user_id' => $userid])->one();
+        if(!isset($message)){
+            $message = new Message();
+            $message->user_id = Yii::$app->user->id; 
+            $message->text = Yii::$app->params['MENSAJE_POR_DEFECTO'];
+        }
+        
+        $authorized = Authorized::find()->where(['user_id'=>$userid, 'device'=>$hash])->one();
+        if(!isset($authorized)){
+            throw new \yii\web\ForbiddenHttpException("Unauthorized device");
+        }
+        $mensaje = $message->text;
+        
+        return $mensaje;
     }
 
 }

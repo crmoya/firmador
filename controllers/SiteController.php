@@ -10,6 +10,7 @@ use app\models\LoginForm;
 use app\models\Document;
 use app\models\FirmaForm;
 use app\models\ImagenFirmaForm;
+use app\models\MessageForm;
 use yii\web\UploadedFile;
 
 class SiteController extends Controller
