@@ -93,9 +93,8 @@ function callWS(documentos){
       else{
         Swal.fire({
           icon: 'error',
-          title: 'ERROR: EQUIPO NO AUTORIZADO PARA FIRMAR',
-          text: respuesta.Message,
-          html: 'Será redirigido al inicio automáticamente en <strong></strong> segundos.<br/><br/>',
+          title: 'ERROR: NO SE PUDO FIRMAR. ',
+          html: '<big>' + respuesta.Message + '</big>' + '<br/>Será redirigido al inicio automáticamente en <strong></strong> segundos.<br/><br/>',
           timer: 3000,
           willOpen: () => {
           timerInterval = setInterval(() => {
